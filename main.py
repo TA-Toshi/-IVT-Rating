@@ -1,14 +1,14 @@
 import asyncio
 import logging
-
-from aiogram import Bot, Dispatcher, types
-from aiogram.filters import Command
-
+from aiogram import Bot, Dispatcher
 import config
-from yd.yd_api import get_by_stud_id, FILE_PATH_PIE, FILE_PATH_IVT, FILE_PATH_IT
+from routers.commands.base_commands import router as cmd_router
+from routers.scripts.base_scripts import router as script_router
 
 bot = Bot(token=config.BOT_TOKEN)
 dp = Dispatcher()
+dp.include_router(cmd_router)
+dp.include_router(script_router)
 
 
 async def main():

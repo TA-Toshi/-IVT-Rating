@@ -50,4 +50,27 @@ def get_by_stud_id(stud_id, file_path):
     return "Нет совпадений"
 
 
-print(get_by_stud_id("1036399", FILE_PATH_PIE))
+def format_student_data(row):
+    # Основная информация
+    response = [
+        f"📊 <b>Успеваемость студента</b>",
+        f"<b>Номер:</b> {row['Студенч. номер']}",
+        "",
+        "<b>Результаты:</b>"
+    ]
+
+    # Обрабатываем предметы
+    for subject, grade in row.items():
+        if subject == "Студенч. номер" or subject == "Примечание":
+            continue
+        if str(grade).strip().lower() != "nan":
+            grade_str = ("✅ зачёт" if str(grade).strip().lower() == "зач"
+                         else "❌ незачёт" if str(grade).strip().lower() == "незач/"
+            else "❌ неявка" if str(grade).strip().lower() == "неяв/"
+            else "🔴 2" if str(grade).strip() == "2/"
+            else f"🟢 {grade}")
+            response.append(f"▪ <i>{subject}:</i> {grade_str}")
+
+    return "\n".join(response)
+
+# print(get_by_stud_id("1036399", FILE_PATH_PIE))
