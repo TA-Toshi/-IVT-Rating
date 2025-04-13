@@ -1,3 +1,5 @@
+import time
+
 import numpy as np
 import yadisk
 import pandas as pd
@@ -69,8 +71,54 @@ def format_student_data(row):
             else "❌ неявка" if str(grade).strip().lower() == "неяв/"
             else "🔴 2" if str(grade).strip() == "2/"
             else f"🟢 {grade}")
-            response.append(f"▪ <i>{subject}:</i> {grade_str}")
+            response.append(f" - <i>{subject}:</i> {grade_str}")
 
     return "\n".join(response)
 
+
 # print(get_by_stud_id("1036399", FILE_PATH_PIE))
+
+
+def find_diff_cells(df1, df2):
+    # Проверка на совпадение размеров, индексов и столбцов
+    if df1.shape != df2.shape:
+        raise ValueError("DataFrames must have the same shape")
+    if not df1.index.equals(df2.index):
+        raise ValueError("Indices do not match")
+    if not df1.columns.equals(df2.columns):
+        raise ValueError("Columns do not match")
+
+    # Создание маски различий с учётом NaN
+    mask = (df1 != df2) & ~(df1.isna() & df2.isna())
+
+    # Получение индексов строк и столбцов
+    rows, cols = np.where(mask)
+
+    # Формирование списка кортежей (индекс, столбец)
+    diff_cells = [(df1.index[row], df1.columns[col]) for row, col in zip(rows, cols)]
+
+    return diff_cells
+
+
+old_df = None
+
+
+def check_upd(file_paths):
+    global old_df
+    new_df = get_df(file_paths)
+    if old_df is None:
+        old_df = new_df
+        return None
+    if not old_df.equals(new_df):
+        upds_list = []
+        upds = find_diff_cells(old_df, new_df)
+        for upd in upds:
+            upds_list.append((upd, new_df[upd[1]][upd[0]]))
+        old_df = new_df
+        return upds_list
+    return None
+
+
+while True:
+    time.sleep(4)
+    print(check_upd(FILE_PATH_IVT))
