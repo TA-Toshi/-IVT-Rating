@@ -1,7 +1,8 @@
 from aiogram import F, types, Router
 from aiogram.fsm.context import FSMContext
 
-from yd.yd_api import FILE_PATH_IVT, FILE_PATH_IT, FILE_PATH_PIE, get_by_stud_id, format_student_data
+from yd.yd_api import get_by_stud_id, format_student_data
+from config import FILE_PATH_IVT, FILE_PATH_IT, FILE_PATH_PIE
 from states.states import StudentStates
 
 router = Router()

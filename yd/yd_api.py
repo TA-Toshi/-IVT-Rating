@@ -1,17 +1,12 @@
-import time
-
 import numpy as np
 import yadisk
 import pandas as pd
 from io import BytesIO
 
-# Настройки
-OAUTH_TOKEN = 'y0__xD5u5uzBhiP2jYgqtfH3BJPdoNuBfWhA76z5-DYzuauTa1Ngw'
-FILE_PATH_IVT = 'Загрузки/Текущая успеваемость 1 курс/ИВТ журнал оценок.xlsx'  # Например, 'Рабочие/данные.xlsx'
-FILE_PATH_IT = 'Загрузки/Текущая успеваемость 1 курс/ИТ журнал оценок.xlsx'
-FILE_PATH_PIE = 'Загрузки/Текущая успеваемость 1 курс/ПИЭжурнал оценок.xlsx'
+import config
 
-y = yadisk.YaDisk(token=OAUTH_TOKEN)
+
+y = yadisk.YaDisk(token=config.OAUTH_TOKEN)
 
 
 def read_excel_from_yadisk(file_path):
@@ -105,7 +100,9 @@ old_df = None
 
 def check_upd(file_paths):
     global old_df
-    new_df = get_df(file_paths)
+    new_df = get_df(file_paths[0])
+    for i in file_paths[1:]:
+        new_df = pd.concat([new_df, get_df(i)], ignore_index=True)
     if old_df is None:
         old_df = new_df
         return None
@@ -113,12 +110,8 @@ def check_upd(file_paths):
         upds_list = []
         upds = find_diff_cells(old_df, new_df)
         for upd in upds:
-            upds_list.append((upd, new_df[upd[1]][upd[0]]))
+            upds_list.append((upd, new_df[upd[1]][upd[0]], new_df["Студенч. номер"][upd[0]]))
         old_df = new_df
         return upds_list
     return None
 
-
-while True:
-    time.sleep(4)
-    print(check_upd(FILE_PATH_IVT))
