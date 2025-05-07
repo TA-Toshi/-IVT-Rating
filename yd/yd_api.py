@@ -5,6 +5,7 @@ from io import BytesIO
 
 import config
 
+from config import FILE_PATH_IVT, FILE_PATH_IT, FILE_PATH_PIE
 
 y = yadisk.YaDisk(token=config.OAUTH_TOKEN)
 
@@ -39,12 +40,17 @@ def get_df(file_path):
 # print(get_df(FILE_PATH_PIE))
 
 
-def get_by_stud_id(stud_id, file_path):
-    df = get_df(file_path)
-    if df["Студенч. номер"].isin([stud_id]).any():
-        row = df.loc[df["Студенч. номер"] == stud_id].iloc[0]
-        return row
-    return "Нет совпадений"
+def get_by_stud_id(stud_id):
+    paths = [FILE_PATH_PIE, FILE_PATH_IT, FILE_PATH_IVT]
+    for file_path in paths:
+        df = get_df(file_path)
+        if df["Студенч. номер"].isin([stud_id]).any():
+            row = df.loc[df["Студенч. номер"] == stud_id].iloc[0]
+            return row
+    return False
+
+
+# print(get_by_stud_id("1036512"))
 
 
 def format_student_data(row):
@@ -114,4 +120,3 @@ def check_upd(file_paths):
         old_df = new_df
         return upds_list
     return None
-

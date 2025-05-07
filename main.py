@@ -34,7 +34,8 @@ async def send_notifications(upds):
 
 async def periodic_check():
     while True:
-        await asyncio.sleep(10)
+        # 86400 - сутки
+        await asyncio.sleep(86400)
         changes = check_upd([config.FILE_PATH_IVT, config.FILE_PATH_IT, config.FILE_PATH_PIE])
         if changes:
             await send_notifications(changes)

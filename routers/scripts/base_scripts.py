@@ -10,13 +10,9 @@ from states.states import StudentStates
 router = Router()
 
 
-@router.message(
-    StudentStates.waiting_direction,
-    F.text.in_(["ИВТ", "ИТ", "ПИЭ"])
-)
+@router.message(F.text == "📊 Успеваемость")
 async def process_direction(message: types.Message, state: FSMContext):
-    await state.update_data(direction=message.text)
-    # await state.update_data(user_id=message.from_user.id)
+    await state.clear()
     await state.set_state(StudentStates.waiting_stud_id)
     await message.answer(
         "Введите 7-значный студенческий номер:",
@@ -31,18 +27,10 @@ async def process_direction(message: types.Message, state: FSMContext):
 )
 async def process_stud_id(message: types.Message, state: FSMContext):
     await state.update_data(student_id=message.text)
-    data = await state.get_data()
-    direction = data['direction']
 
-    direction_map = {
-        "ИВТ": FILE_PATH_IVT,
-        "ИТ": FILE_PATH_IT,
-        "ПИЭ": FILE_PATH_PIE
-    }
+    result = get_by_stud_id(message.text)
 
-    result = get_by_stud_id(message.text, direction_map[direction])
-
-    if isinstance(result, str):
+    if result is False:
         await message.answer("❌ Студент не найден")
     else:
         await message.answer(
@@ -59,9 +47,10 @@ async def sub_yes_no(callback: types.CallbackQuery, state: FSMContext):
     data = await state.get_data()
     if approval == "yes":
         await add_to_db(callback.from_user.id, data["student_id"])
-        await callback.message.edit_text(f"Подписка на студента - { data['student_id']}")
+        await callback.message.edit_text(f"Подписка на студента - {data['student_id']}")
         await state.clear()
     else:
+        await callback.message.edit_text(f"Ладно")
         await state.clear()
 
 
@@ -75,5 +64,6 @@ async def cmd_cancel(message: types.Message, state: FSMContext):
 
 
 @router.message(StudentStates.waiting_stud_id)
-async def wrong_stud_id(message: types.Message):
+async def wrong_stud_id(message: types.Message, state: FSMContext):
     await message.answer("❌ Введите 7 цифр студенческого номера")
+    await state.set_state(StudentStates.waiting_stud_id)

@@ -27,3 +27,17 @@ async def get_all_users():
         cursor = await db.execute("SELECT * FROM users")
         return await cursor.fetchall()
 
+
+async def get_by_telegram_id(telegram_id):
+    async with aiosqlite.connect("yd/tg.db") as db:
+        await db.execute("CREATE TABLE IF NOT EXISTS users (telegram_id BIGINT, student_id TEXT)")
+        cursor = await db.execute("SELECT student_id FROM users WHERE telegram_id = ?", (telegram_id,))
+        rows = await cursor.fetchall()
+        return [row[0] for row in rows]
+
+
+async def del_all_by_id(telegram_id):
+    async with aiosqlite.connect("yd/tg.db") as db:
+        await db.execute("CREATE TABLE IF NOT EXISTS users (telegram_id BIGINT, student_id TEXT)")
+        await db.execute("DELETE FROM users WHERE telegram_id = ?", (telegram_id,))
+        await db.commit()
