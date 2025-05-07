@@ -4,7 +4,6 @@ from aiogram.fsm.context import FSMContext
 from keyboards.inline_keyboards import sub_keyboard
 from yd.db import add_to_db
 from yd.yd_api import get_by_stud_id, format_student_data
-from config import FILE_PATH_IVT, FILE_PATH_IT, FILE_PATH_PIE
 from states.states import StudentStates
 
 router = Router()
@@ -16,7 +15,6 @@ async def process_direction(message: types.Message, state: FSMContext):
     await state.set_state(StudentStates.waiting_stud_id)
     await message.answer(
         "Введите 7-значный студенческий номер:",
-        reply_markup=types.ReplyKeyboardRemove(),
         parse_mode="HTML"
     )
 
@@ -29,7 +27,6 @@ async def process_stud_id(message: types.Message, state: FSMContext):
     await state.update_data(student_id=message.text)
 
     result = get_by_stud_id(message.text)
-
     if result is False:
         await message.answer("❌ Студент не найден")
     else:

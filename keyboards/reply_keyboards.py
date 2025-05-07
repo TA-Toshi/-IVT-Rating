@@ -1,14 +1,9 @@
-from aiogram import types
-from aiogram.utils.keyboard import ReplyKeyboardBuilder
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
-
-async def directions_keyboard():
-    builder = ReplyKeyboardBuilder()
-    builder.add(
-        types.KeyboardButton(text="📊 Успеваемость"),
-        types.KeyboardButton(text="‍👩‍👦 Подписки")
-    )
-    builder.adjust(2)
-    return builder.as_markup(
-        resize_keyboard=True
-    )
+directions_keyboard = ReplyKeyboardMarkup(
+    keyboard=[
+        [KeyboardButton(text="📊 Успеваемость"),
+         KeyboardButton(text="‍👩‍👦 Подписки")],
+    ],
+    resize_keyboard=True
+)

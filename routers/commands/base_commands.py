@@ -16,7 +16,7 @@ async def cmd_start(message: types.Message, state: FSMContext):
     await state.set_state(StudentStates.waiting_direction)
     await message.answer(
         "👋 <b>Бот проверки успеваемости</b>\n",
-        reply_markup=await directions_keyboard(),
+        reply_markup=directions_keyboard,
         parse_mode="HTML"
     )
 
