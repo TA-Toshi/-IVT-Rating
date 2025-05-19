@@ -27,13 +27,27 @@ async def cmd_help(message: types.Message):
 
 
 @router.message(Command("sub"))
-async def cmd_sub(message: types.Message, command: CommandObject):
-    result = get_by_stud_id(command.args)
+async def cmd_sub(message: types.Message, state: FSMContext):
+    await message.answer(text="Укажите номер студенческого")
+    await state.set_state(StudentStates.pre_sub)
+
+
+@router.message(StudentStates.pre_sub, F.text.regexp(r'^\d{7}$'))
+async def pre_cmd_sub(message: types.Message, state: FSMContext):
+    result = get_by_stud_id(message.text)
     if result is False:
-        await message.answer(text=f"Студента с №{command.args} нет")
+        await message.answer(text=f"Студента с №{message.text} нет")
+        await state.set_state(StudentStates.pre_sub)
     else:
-        await add_to_db(message.from_user.id, command.args)
-        await message.answer(text=f"Подписка на обновления студента №{command.args}")
+        await add_to_db(message.from_user.id, message.text)
+        await message.answer(text=f"Подписка на обновления студента №{message.text}")
+        await state.clear()
+
+
+@router.message(StudentStates.pre_sub)
+async def sub_err(message: types.Message, state: FSMContext):
+    await message.answer(text=f"❌ Введите 7 цифр студенческого номера")
+    await state.set_state(StudentStates.pre_sub)
 
 
 @router.message(Command("unsub"))
@@ -48,7 +62,7 @@ async def cmd_sub(message: types.Message, state: FSMContext):
                 for name in row
             ]
             keyboard.append(keyboard_row)
-            keyboard.append([InlineKeyboardButton(text="Все", callback_data="all")])
+        keyboard.append([InlineKeyboardButton(text="Все", callback_data="all")])
         await message.answer(
             text="От кого выхотите отписаться?",
             reply_markup=InlineKeyboardMarkup(inline_keyboard=keyboard)

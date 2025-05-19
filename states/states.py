@@ -7,3 +7,4 @@ class StudentStates(StatesGroup):
     waiting_sub = State()
     unsub = State()
     check = State()
+    pre_sub = State()
