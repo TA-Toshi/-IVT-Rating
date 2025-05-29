@@ -47,7 +47,7 @@ async def sub_yes_no(callback: types.CallbackQuery, state: FSMContext):
         await callback.message.edit_text(f"Подписка на студента - {data['student_id']}")
         await state.clear()
     else:
-        await callback.message.edit_text(f"Ладно")
+        await callback.message.delete()
         await state.clear()
 
 

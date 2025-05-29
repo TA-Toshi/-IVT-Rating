@@ -69,7 +69,7 @@ async def cmd_sub(message: types.Message, state: FSMContext):
         )
         await state.set_state(StudentStates.unsub)
     else:
-        await message.answer(text=f"Нет подписок")
+        await message.answer(text=f"У вас нет подписок.")
         await state.clear()
 
 
@@ -104,6 +104,10 @@ async def check_by_sub(message: types.Message, state: FSMContext):
             reply_markup=InlineKeyboardMarkup(inline_keyboard=keyboard)
         )
         await state.set_state(StudentStates.check)
+    else:
+        await message.answer(
+            text="У вас нет подписок.",
+        )
 
 
 @router.callback_query(StudentStates.check)
