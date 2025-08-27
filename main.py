@@ -7,7 +7,12 @@ from routers.scripts.base_scripts import router as script_router
 from yd.db import get_all_users
 from yd.yd_api import check_upd
 
-bot = Bot(token=config.BOT_TOKEN)
+import os
+from dotenv import load_dotenv, find_dotenv
+
+load_dotenv(find_dotenv())
+
+bot = Bot(token=os.getenv("BOT_TOKEN"))
 dp = Dispatcher()
 dp.include_router(cmd_router)
 dp.include_router(script_router)

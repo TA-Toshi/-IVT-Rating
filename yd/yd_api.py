@@ -3,11 +3,13 @@ import yadisk
 import pandas as pd
 from io import BytesIO
 
-import config
+import os
+from dotenv import load_dotenv, find_dotenv
 
 from config import FILE_PATH_IVT, FILE_PATH_IT, FILE_PATH_PIE
 
-y = yadisk.YaDisk(token=config.OAUTH_TOKEN)
+load_dotenv(find_dotenv())
+y = yadisk.YaDisk(token=os.getenv("OAUTH_TOKEN"))
 
 
 def read_excel_from_yadisk(file_path):
