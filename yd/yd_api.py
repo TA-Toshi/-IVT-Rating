@@ -155,11 +155,19 @@ def format_student_data(row):
         if subject == "Студенч. номер" or subject == "Примечание":
             continue
         if str(grade).strip().lower() != "none" and str(grade).strip().lower() != "nan":
-            grade_str = ("✅ зачёт" if str(grade).strip().lower() == "зач"
-                         else "❌ незачёт" if str(grade).strip().lower() == "незач/"
-            else "❌ неявка" if str(grade).strip().lower() == "неяв/"
-            else "🔴 2" if str(grade).strip() == "2/"
-            else f"🟢 {grade}")
+            if "/" in str(grade):
+                grade_str = ("🟡 3" if "3" in str(grade).strip().lower()
+                else "✅ зачёт" if "зач" in str(grade).strip().lower().split('/')[-1]
+                else "❌ незачёт" if "незач" in str(grade).strip().lower().split('/')[-2]
+                else "❌ неявка" if "н" in str(grade).strip().lower().split('/')[-2]
+                else "❌ неявка" if "неяв" in str(grade).strip().lower().split('/')[-2]
+                else "🔴 2" if "2" in str(grade).strip().lower().split('/')[-2]
+                else "❌ незачёт" if "нз" in str(grade).strip().lower().split('/')[-2]
+                else f"🟢 {grade}")
+            else:
+                grade_str = ("✅ зачёт" if "зач" in str(grade).strip().lower()
+                else "🟡 3" if "3" in str(grade).strip().lower()
+                else f"🟢 {str(grade).strip().lower()[0]}")
             response.append(f" - <i>{subject}:</i> {grade_str}")
 
     return "\n".join(response)
